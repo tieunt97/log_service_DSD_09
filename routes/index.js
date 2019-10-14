@@ -1,9 +1,10 @@
-const router = require('express').Router();
-
-const asyncMiddlware = require('../middlewares/wrapAsync');
-
-const controller = require('../controllers');
-
-router.get('/helloworld', asyncMiddlware(controller.helloworld));
-
-module.exports = router;
+/* eslint-disable import/no-dynamic-require */
+module.exports = app => {
+  require('fs')
+    .readdirSync('./routes')
+    .forEach(fileName => {
+      if (fileName === 'index.js') return;
+      if (['js'].indexOf(fileName.split('.').pop()) === -1) return;
+      app.use('/api/v1', require(`./${fileName}`));
+    });
+};
