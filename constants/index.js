@@ -1,0 +1,9 @@
+const REPORT_STATUS = {
+  TODO: 'TODO',
+  INPROGRESS: 'INPROGRESS',
+  SUBMITTED: 'SUBMITTED',
+  DONE: 'DONE',
+};
+module.exports = {
+  REPORT_STATUS,
+};
