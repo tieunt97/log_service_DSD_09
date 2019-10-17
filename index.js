@@ -38,11 +38,13 @@ app.use(
     },
   }),
 );
-
-const apiVersion1 = '/api/v1';
-app.use(apiVersion1, require('./routes'));
-
 app.use(errorHandler);
+
+require('./routes')(app);
+
+app.use('/', (req, res) => {
+  res.send('Connect to server success');
+});
 
 const { PORT } = process.env;
 app.listen(PORT, () => {
