@@ -38,13 +38,14 @@ app.use(
     },
   }),
 );
-app.use(errorHandler);
 
 require('./routes')(app);
 
-app.use('/', (req, res) => {
-  res.send('Connect to server success');
-});
+app.use(errorHandler);
+
+// app.use('/', (req, res) => {
+//   res.send('Connect to server success');
+// });
 
 const { PORT } = process.env;
 app.listen(PORT, () => {
