@@ -5,6 +5,7 @@ const kpiSchema = new mongoose.Schema(
     id: String,
     userId: String,
     departmentId: String,
+    projectId: String,
     rateCompleted: Number,
     score: Number,
     startDate: {
@@ -14,6 +15,14 @@ const kpiSchema = new mongoose.Schema(
     endDate: {
       type: Date,
       default: null,
+    },
+    type: {
+      type: String,
+      default: 'PERSON',
+    },
+    status: {
+      type: String,
+      default: 'TODO',
     },
   },
   {

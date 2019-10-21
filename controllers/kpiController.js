@@ -64,7 +64,7 @@ async function getByUserId(req, res) {
   const { userId } = req.query;
   let { startTime, endTime } = req.query;
   req
-    .checkBody('userId')
+    .checkQuery('userId')
     .not()
     .isEmpty()
     .withMessage('field user_id is not empty');
@@ -115,13 +115,13 @@ async function getByDepartment(req, res) {
   const { departmentId } = req.query;
   let { startTime, endTime } = req.query;
   req
-    .checkBody('departmentId')
+    .checkQuery('departmentId')
     .not()
     .isEmpty()
     .withMessage('field department_id is not empty');
   if (startTime)
     req
-      .checkBody('startTime')
+      .checkQuery('startTime')
       .not()
       .isEmpty()
       .withMessage('field start_time is not empty')
@@ -134,7 +134,7 @@ async function getByDepartment(req, res) {
       .withMessage('field start_time is timestamp');
   if (endTime)
     req
-      .checkBody('endTime')
+      .checkQuery('endTime')
       .not()
       .isEmpty()
       .withMessage('field end_time is not empty')
@@ -147,10 +147,11 @@ async function getByDepartment(req, res) {
       .withMessage('field end_time is timestamp');
   if (startTime && endTime)
     req
-      .checkBody('startTime')
+      .checkQuery('startTime')
       .custom(value => req.body.endTime - value >= 0)
       .withMessage('field start_time < end_time');
   validate.validateParams(req);
+
   if (!startTime) startTime = 1;
   if (!endTime) endTime = new Date().valueOf();
 
