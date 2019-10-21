@@ -151,6 +151,7 @@ async function getByDepartment(req, res) {
       .custom(value => req.body.endTime - value >= 0)
       .withMessage('field start_time < end_time');
   validate.validateParams(req);
+
   if (!startTime) startTime = 1;
   if (!endTime) endTime = new Date().valueOf();
 
