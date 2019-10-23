@@ -1,8 +1,20 @@
 const validate = require('../middlewares/validate');
 const taskService = require('../services/taskService');
+const CustomError = require('../errors/CustomError');
+const statusCodes = require('../errors/statusCode');
 const { TYPE_TASK } = require('../constants');
 
 async function createLogTask(req, res) {
+  const {
+    taskId,
+    createId,
+    assignId,
+    type,
+    startDate,
+    dueDate,
+    endDate,
+  } = req.body;
+
   req
     .checkBody('taskId')
     .not()
@@ -29,24 +41,33 @@ async function createLogTask(req, res) {
     .checkBody('startDate')
     .not()
     .isEmpty()
-    .withMessage('field startDate is not empty');
+    .withMessage('field startDate is not empty')
+    .custom(value => validate.isDateFormat(value))
+    .withMessage('startDate format invalid yyyy-mm-dd');
   req
     .checkBody('dueDate')
     .not()
     .isEmpty()
-    .withMessage('field dueDate is not empty');
+    .withMessage('field dueDate is not empty')
+    .custom(value => validate.isDateFormat(value))
+    .withMessage('startDate format invalid yyyy-mm-dd')
+    .custom(value => new Date(value) >= new Date(startDate))
+    .withMessage('field dueDate < startDate');
+
+  if (endDate) {
+    req
+      .checkBody('endDate')
+      .custom(value => validate.isDateFormat(value))
+      .withMessage('startDate format invalid yyyy-mm-dd')
+      .custom(value => new Date(value) >= new Date(startDate))
+      .withMessage('field endDate < startDate');
+  }
 
   validate.validateParams(req);
 
-  const {
-    taskId,
-    createId,
-    assignId,
-    type,
-    startDate,
-    dueDate,
-    endDate,
-  } = req.body;
+  if (await taskService.checkTaskExist({ taskId })) {
+    throw new CustomError(statusCodes.BAD_REQUEST, 'log task exists');
+  }
 
   await taskService.createLogTask({
     taskId,

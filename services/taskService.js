@@ -29,6 +29,12 @@ async function createLogTask({
   }
 }
 
+async function checkTaskExist({ taskId }) {
+  const result = await taskModel.findOne({ taskId });
+  return result != null;
+}
+
 module.exports = {
   createLogTask,
+  checkTaskExist,
 };
