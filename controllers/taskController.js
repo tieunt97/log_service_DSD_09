@@ -65,6 +65,35 @@ async function deleteLogTask(req, res) {
   res.send({ status: 1, message: 'delete log task success' });
 }
 
+async function getLogTaskById(req, res) {
+  const { taskId } = req.params;
+
+  const result = await taskService.getLogTaskById(taskId);
+
+  if (!result) {
+    res.send({ status: 0, message: 'Log Task not found' });
+  }
+
+  res.send({ status: 1, result });
+}
+
+async function getLogTaskByProject(req, res) {
+  const { projectId } = req.params;
+  const { startDate, endDate, limit, page } = req.query;
+
+  taskValidate.getLogTaskByProjectValidation(req);
+
+  const results = await taskService.getLogTaskByProject({
+    projectId,
+    startDate,
+    endDate,
+    limit,
+    page,
+  });
+
+  res.send({ status: 1, results });
+}
+
 async function getLogTaskByUser(req, res) {
   const { userId, type, startDate, endDate, limit, page } = req.query;
 
@@ -86,5 +115,7 @@ module.exports = {
   createLogTask,
   updateLogTask,
   deleteLogTask,
+  getLogTaskById,
+  getLogTaskByProject,
   getLogTaskByUser,
 };

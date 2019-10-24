@@ -10,6 +10,11 @@ router.delete(
   '/log-task/:taskId',
   asyncMiddleware(taskController.deleteLogTask),
 );
+router.get('/log-task/:taskId', asyncMiddleware(taskController.getLogTaskById));
+router.get(
+  '/log-task/:projectId/task',
+  asyncMiddleware(taskController.getLogTaskByProject),
+);
 router.get('/log-task/user', asyncMiddleware(taskController.getLogTaskByUser));
 
 module.exports = router;

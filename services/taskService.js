@@ -122,6 +122,46 @@ async function deleteLogTask(taskId) {
   }
 }
 
+async function getLogTaskById(taskId) {
+  const result = await taskModel.findOne({ taskId });
+
+  return result;
+}
+
+async function getLogTaskByProject({
+  projectId,
+  startDate,
+  endDate,
+  limit,
+  page,
+}) {
+  page = page || 1;
+  limit = limit || 10;
+
+  const queryOpts = { 'project.id': projectId };
+
+  if (startDate) {
+    queryOpts.startDate = { $gte: new Date(startDate) };
+  }
+  if (endDate) {
+    queryOpts.endDate = { $lte: new Date(endDate) };
+  }
+
+  const results = await taskModel
+    .find(queryOpts)
+    .skip((page - 1) * limit)
+    .limit(+limit);
+
+  if (!results) {
+    throw new CustomError(
+      statusCode.INTERNAL_SERVER_ERROR,
+      'Get Log Task By Project Error',
+    );
+  }
+
+  return results;
+}
+
 async function getLogTaskByUser({
   userId,
   type,
@@ -174,5 +214,7 @@ module.exports = {
   createLogTask,
   updateLogTask,
   deleteLogTask,
+  getLogTaskById,
+  getLogTaskByProject,
   getLogTaskByUser,
 };

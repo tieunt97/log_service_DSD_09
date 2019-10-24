@@ -180,6 +180,43 @@ function updateLogTaskValidation(req) {
   validate.validateParams(req);
 }
 
+function getLogTaskByProjectValidation(req) {
+  const { startDate, endDate, limit, page } = req.query;
+
+  if (startDate !== undefined) {
+    req
+      .checkQuery('startDate')
+      .custom(value => validate.isDateFormat(value))
+      .withMessage('startDate format invalid yyyy-mm-dd');
+  }
+  if (endDate !== undefined) {
+    req
+      .checkQuery('endDate')
+      .custom(value => validate.isDateFormat(value))
+      .withMessage('endDate format invalid yyyy-mm-dd');
+  }
+  if (startDate !== undefined && endDate !== undefined) {
+    req
+      .checkQuery('endDate')
+      .custom(value => new Date(value) >= new Date(startDate))
+      .withMessage('field endDate < startDate');
+  }
+  if (page !== undefined) {
+    req
+      .checkQuery('page')
+      .isInt({ gt: 0 })
+      .withMessage('field page invalid');
+  }
+  if (limit !== undefined) {
+    req
+      .checkQuery('limit')
+      .isInt({ gt: 0 })
+      .withMessage('field limit invalid');
+  }
+
+  validate.validateParams(req);
+}
+
 function getLogTaskByUserValidation(req) {
   const { type, startDate, endDate, limit, page } = req.query;
 
@@ -231,5 +268,6 @@ function getLogTaskByUserValidation(req) {
 module.exports = {
   createLogTaskValidation,
   updateLogTaskValidation,
+  getLogTaskByProjectValidation,
   getLogTaskByUserValidation,
 };
