@@ -3,6 +3,7 @@ const taskValidate = require('../validations/taskValidation');
 
 async function createLogTask(req, res) {
   const {
+    id,
     project,
     taskId,
     taskName,
@@ -26,6 +27,7 @@ async function createLogTask(req, res) {
     startDate,
     dueDate,
     endDate,
+    id,
   });
 
   return res.send({ status: 1, message: 'create log task success' });

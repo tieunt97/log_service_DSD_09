@@ -2,8 +2,16 @@ const reportModel = require('../models/report');
 const statusCode = require('../errors/statusCode');
 const CustomError = require('../errors/CustomError');
 
-async function createLogReport({ reporter, receiver, reportId, status, type }) {
+async function createLogReport({
+  reporter,
+  receiver,
+  reportId,
+  status,
+  type,
+  id,
+}) {
   const result = await reportModel.create({
+    id,
     reporter,
     receiver,
     reportId,

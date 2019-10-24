@@ -3,7 +3,7 @@ const reportService = require('../services/reportService');
 const { REPORT_STATUS } = require('../constants');
 
 async function create(req, res) {
-  const { reporter, receiver, reportId, status, type } = req.body;
+  const { reporter, receiver, reportId, status, type, id } = req.body;
   req
     .checkBody('reporter')
     .not()
@@ -35,6 +35,7 @@ async function create(req, res) {
     reportId,
     status,
     type,
+    id,
   });
   return res.send({ status: 1 });
 }
