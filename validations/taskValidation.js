@@ -1,5 +1,5 @@
 const validate = require('../middlewares/validate');
-const { TYPE_TASK } = require('../constants');
+const { TYPE_TASK, USER_TASK_QUERY } = require('../constants');
 
 function createLogTaskValidation(req) {
   const { startDate, endDate, assignee } = req.body;
@@ -156,7 +156,7 @@ function updateLogTaskValidation(req) {
     req
       .checkBody('dueDate')
       .custom(value => validate.isDateFormat(value))
-      .withMessage('startDate format invalid yyyy-mm-dd');
+      .withMessage('dueDate format invalid yyyy-mm-dd');
   }
   if (startDate && dueDate) {
     req
@@ -168,7 +168,7 @@ function updateLogTaskValidation(req) {
     req
       .checkBody('endDate')
       .custom(value => validate.isDateFormat(value))
-      .withMessage('startDate format invalid yyyy-mm-dd');
+      .withMessage('endDate format invalid yyyy-mm-dd');
   }
   if (startDate && endDate) {
     req
@@ -180,7 +180,56 @@ function updateLogTaskValidation(req) {
   validate.validateParams(req);
 }
 
+function getLogTaskByUserValidation(req) {
+  const { type, startDate, endDate, limit, page } = req.query;
+
+  req
+    .checkQuery('userId')
+    .not()
+    .isEmpty()
+    .withMessage('field userId is not empty');
+  if (type !== undefined) {
+    req
+      .checkQuery('type')
+      .custom(value => USER_TASK_QUERY[value])
+      .withMessage('field type invalid: ALL, CREATOR, ASSIGNEE');
+  }
+  if (startDate !== undefined) {
+    req
+      .checkQuery('startDate')
+      .custom(value => validate.isDateFormat(value))
+      .withMessage('startDate format invalid yyyy-mm-dd');
+  }
+  if (endDate !== undefined) {
+    req
+      .checkQuery('endDate')
+      .custom(value => validate.isDateFormat(value))
+      .withMessage('endDate format invalid yyyy-mm-dd');
+  }
+  if (startDate !== undefined && endDate !== undefined) {
+    req
+      .checkQuery('endDate')
+      .custom(value => new Date(value) >= new Date(startDate))
+      .withMessage('field endDate < startDate');
+  }
+  if (page !== undefined) {
+    req
+      .checkQuery('page')
+      .isInt({ gt: 0 })
+      .withMessage('field page invalid');
+  }
+  if (limit !== undefined) {
+    req
+      .checkQuery('limit')
+      .isInt({ gt: 0 })
+      .withMessage('field limit invalid');
+  }
+
+  validate.validateParams(req);
+}
+
 module.exports = {
   createLogTaskValidation,
   updateLogTaskValidation,
+  getLogTaskByUserValidation,
 };

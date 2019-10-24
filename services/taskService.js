@@ -1,4 +1,5 @@
 const taskModel = require('../models/task');
+const { USER_TASK_QUERY } = require('../constants');
 const statusCode = require('../errors/statusCode');
 const CustomError = require('../errors/CustomError');
 
@@ -106,6 +107,64 @@ async function updateLogTask({
   }
 }
 
+async function deleteLogTask(taskId) {
+  if (!(await checkTaskExist({ taskId }))) {
+    throw new CustomError(statusCode.BAD_REQUEST, 'task not exist');
+  }
+
+  const result = await taskModel.remove({ taskId });
+
+  if (!result) {
+    throw new CustomError(
+      statusCode.INTERNAL_SERVER_ERROR,
+      'Delete Log Task Error',
+    );
+  }
+}
+
+async function getLogTaskByUser({
+  userId,
+  type,
+  startDate,
+  endDate,
+  limit,
+  page,
+}) {
+  type = type || USER_TASK_QUERY.ALL;
+  page = page || 1;
+  limit = limit || 10;
+
+  const queryOpts = {};
+
+  if (type === USER_TASK_QUERY.ALL) {
+    queryOpts.$or = [{ 'creator.id': userId }, { 'assignee.id': userId }];
+  } else if (type === USER_TASK_QUERY.CREATOR) {
+    queryOpts['creator.id'] = userId;
+  } else {
+    queryOpts['assignee.id'] = userId;
+  }
+  if (startDate) {
+    queryOpts.startDate = { $gte: new Date(startDate) };
+  }
+  if (endDate) {
+    queryOpts.endDate = { $lte: new Date(endDate) };
+  }
+
+  const results = await taskModel
+    .find(queryOpts)
+    .skip((page - 1) * limit)
+    .limit(+limit);
+
+  if (!results) {
+    throw new CustomError(
+      statusCode.INTERNAL_SERVER_ERROR,
+      'Get Log Task By User Error',
+    );
+  }
+
+  return results;
+}
+
 async function checkTaskExist({ taskId }) {
   const result = await taskModel.findOne({ taskId });
   return result != null;
@@ -114,4 +173,6 @@ async function checkTaskExist({ taskId }) {
 module.exports = {
   createLogTask,
   updateLogTask,
+  deleteLogTask,
+  getLogTaskByUser,
 };

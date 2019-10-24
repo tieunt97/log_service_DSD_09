@@ -10,7 +10,14 @@ const TYPE_TASK = {
   ENHANCE: 'ENHANCE',
 };
 
+const USER_TASK_QUERY = {
+  ALL: 'ALL',
+  CREATOR: 'CREATOR',
+  ASSIGNEE: 'ASSIGNEE',
+};
+
 module.exports = {
   REPORT_STATUS,
   TYPE_TASK,
+  USER_TASK_QUERY,
 };

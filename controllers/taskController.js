@@ -57,7 +57,34 @@ async function updateLogTask(req, res) {
   return res.send({ status: 1, message: 'update log task success' });
 }
 
+async function deleteLogTask(req, res) {
+  const { taskId } = req.params;
+
+  await taskService.deleteLogTask(taskId);
+
+  res.send({ status: 1, message: 'delete log task success' });
+}
+
+async function getLogTaskByUser(req, res) {
+  const { userId, type, startDate, endDate, limit, page } = req.query;
+
+  taskValidate.getLogTaskByUserValidation(req);
+
+  const results = await taskService.getLogTaskByUser({
+    userId,
+    type,
+    startDate,
+    endDate,
+    limit,
+    page,
+  });
+
+  res.send({ status: 1, results });
+}
+
 module.exports = {
   createLogTask,
   updateLogTask,
+  deleteLogTask,
+  getLogTaskByUser,
 };
