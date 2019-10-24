@@ -3,9 +3,11 @@ const taskValidate = require('../validations/taskValidation');
 
 async function createLogTask(req, res) {
   const {
+    project,
     taskId,
-    createId,
-    assignId,
+    taskName,
+    creator,
+    assignee,
     type,
     startDate,
     dueDate,
@@ -15,9 +17,11 @@ async function createLogTask(req, res) {
   taskValidate.createLogTaskValidation(req);
 
   await taskService.createLogTask({
+    project,
     taskId,
-    createId,
-    assignId,
+    taskName,
+    creator,
+    assignee,
     type,
     startDate,
     dueDate,
@@ -30,8 +34,8 @@ async function createLogTask(req, res) {
 async function updateLogTask(req, res) {
   const {
     taskId,
-    createId,
-    assignId,
+    taskName,
+    assignee,
     type,
     startDate,
     dueDate,
@@ -42,8 +46,8 @@ async function updateLogTask(req, res) {
 
   await taskService.updateLogTask({
     taskId,
-    createId,
-    assignId,
+    taskName,
+    assignee,
     type,
     startDate,
     dueDate,

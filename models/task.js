@@ -7,14 +7,12 @@ const {
 const taskSchema = new mongoose.Schema(
   {
     id: String,
-    taskId: String,
-    createId: String,
-    assignId: String,
-    type: {
-      type: String,
-      enum: [NEW, ENHANCE],
-      default: NEW,
+    project: {
+      id: String,
+      name: String,
     },
+    taskId: String,
+    taskName: String,
     startDate: {
       type: Date,
       default: null,
@@ -26,6 +24,19 @@ const taskSchema = new mongoose.Schema(
     endDate: {
       type: Date,
       default: null,
+    },
+    type: {
+      type: String,
+      enum: [NEW, ENHANCE],
+      default: NEW,
+    },
+    creator: {
+      id: String,
+      name: String,
+    },
+    assignee: {
+      id: String,
+      name: String,
     },
   },
   {

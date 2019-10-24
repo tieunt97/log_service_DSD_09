@@ -3,9 +3,11 @@ const statusCode = require('../errors/statusCode');
 const CustomError = require('../errors/CustomError');
 
 async function createLogTask({
+  project,
   taskId,
-  createId,
-  assignId,
+  taskName,
+  creator,
+  assignee,
   type,
   startDate,
   dueDate,
@@ -16,9 +18,11 @@ async function createLogTask({
   }
 
   const result = await taskModel.create({
+    project,
     taskId,
-    createId,
-    assignId,
+    taskName,
+    creator,
+    assignee,
     type,
     startDate,
     dueDate,
@@ -35,8 +39,8 @@ async function createLogTask({
 
 async function updateLogTask({
   taskId,
-  createId,
-  assignId,
+  taskName,
+  assignee,
   type,
   startDate,
   dueDate,
@@ -48,11 +52,11 @@ async function updateLogTask({
 
   const updateObj = {};
 
-  if (createId) {
-    updateObj.createId = createId;
+  if (taskName) {
+    updateObj.taskName = taskName;
   }
-  if (assignId) {
-    updateObj.assignId = assignId;
+  if (assignee) {
+    updateObj.assignee = assignee;
   }
   if (type) {
     updateObj.type = type;
