@@ -3,6 +3,7 @@ const kpiService = require('../services/kpiService');
 
 async function createByUser(req, res) {
   const {
+    id,
     userId,
     departmentId,
     rateCompleted,
@@ -55,6 +56,7 @@ async function createByUser(req, res) {
     score,
     startTime,
     endTime,
+    id,
   });
 
   return res.send({ status: 1 });

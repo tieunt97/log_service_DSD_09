@@ -3,6 +3,7 @@ const statusCode = require('../errors/statusCode');
 const CustomError = require('../errors/CustomError');
 
 async function createLogUser({
+  id,
   userId,
   departmentId,
   rateCompleted,
@@ -11,6 +12,7 @@ async function createLogUser({
   endTime,
 }) {
   const result = await kpiModel.create({
+    id,
     userId,
     departmentId,
     rateCompleted,
