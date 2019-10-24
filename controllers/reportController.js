@@ -3,7 +3,7 @@ const reportService = require('../services/reportService');
 const { REPORT_STATUS } = require('../constants');
 
 async function create(req, res) {
-  const { reporter, receiver, reportId, status, type } = req.body;
+  const { reporter, receiver, reportId, status, type, id } = req.body;
   req
     .checkBody('reporter')
     .not()
@@ -35,6 +35,7 @@ async function create(req, res) {
     reportId,
     status,
     type,
+    id,
   });
   return res.send({ status: 1 });
 }
@@ -72,7 +73,18 @@ async function remove(req, res) {
 }
 
 async function gets(req, res) {
+  const { limit, pageNum } = req.query;
   let { startTime, endTime } = req.query;
+  if (limit)
+    req
+      .checkQuery('limit')
+      .isInt()
+      .withMessage('field limit is number');
+  if (pageNum)
+    req
+      .checkQuery('pageNum')
+      .isInt()
+      .withMessage('field page_num is number');
   if (startTime)
     req
       .checkBody('startTime')
@@ -108,7 +120,12 @@ async function gets(req, res) {
   if (!startTime) startTime = 1;
   if (!endTime) endTime = new Date().valueOf();
 
-  const result = await reportService.getLogReportList({ startTime, endTime });
+  const result = await reportService.getLogReportList({
+    startTime,
+    endTime,
+    limit,
+    pageNum,
+  });
   return res.send({ status: 1, result });
 }
 

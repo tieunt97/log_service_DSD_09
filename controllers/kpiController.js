@@ -3,6 +3,7 @@ const kpiService = require('../services/kpiService');
 
 async function createByUser(req, res) {
   const {
+    id,
     userId,
     departmentId,
     rateCompleted,
@@ -55,22 +56,33 @@ async function createByUser(req, res) {
     score,
     startTime,
     endTime,
+    id,
   });
 
   return res.send({ status: 1 });
 }
 
 async function getByUserId(req, res) {
-  const { userId } = req.query;
+  const { userId, limit, pageNum } = req.query;
   let { startTime, endTime } = req.query;
   req
     .checkQuery('userId')
     .not()
     .isEmpty()
     .withMessage('field user_id is not empty');
+  if (limit)
+    req
+      .checkQuery('limit')
+      .isInt()
+      .withMessage('field limit is number');
+  if (pageNum)
+    req
+      .checkQuery('pageNum')
+      .isInt()
+      .withMessage('field page_num is number');
   if (startTime)
     req
-      .checkBody('startTime')
+      .checkQuery('startTime')
       .not()
       .isEmpty()
       .withMessage('field start_time is not empty')
@@ -83,7 +95,7 @@ async function getByUserId(req, res) {
       .withMessage('field start_time is timestamp');
   if (endTime)
     req
-      .checkBody('endTime')
+      .checkQuery('endTime')
       .not()
       .isEmpty()
       .withMessage('field end_time is not empty')
@@ -96,7 +108,7 @@ async function getByUserId(req, res) {
       .withMessage('field end_time is timestamp');
   if (startTime && endTime)
     req
-      .checkBody('startTime')
+      .checkQuery('startTime')
       .custom(value => req.body.endTime - value >= 0)
       .withMessage('field start_time < end_time');
   validate.validateParams(req);
@@ -107,18 +119,30 @@ async function getByUserId(req, res) {
     userId,
     startTime,
     endTime,
+    limit,
+    pageNum,
   });
   return res.send({ status: 1, result });
 }
 
 async function getByDepartment(req, res) {
-  const { departmentId } = req.query;
+  const { departmentId, limit, pageNum } = req.query;
   let { startTime, endTime } = req.query;
   req
     .checkQuery('departmentId')
     .not()
     .isEmpty()
     .withMessage('field department_id is not empty');
+  if (limit)
+    req
+      .checkQuery('limit')
+      .isInt()
+      .withMessage('field limit is number');
+  if (pageNum)
+    req
+      .checkQuery('pageNum')
+      .isInt()
+      .withMessage('field page_num is number');
   if (startTime)
     req
       .checkQuery('startTime')
@@ -159,14 +183,24 @@ async function getByDepartment(req, res) {
     departmentId,
     startTime,
     endTime,
+    limit,
+    pageNum,
   });
   return res.send({ status: 1, result });
 }
 
 async function getByTime(req, res) {
-  const { startTime, endTime } = req.query;
+  const { startTime, endTime, limit, pageNum } = req.query;
   req
-    .checkBody('startTime')
+    .checkQuery('limit')
+    .isInt()
+    .withMessage('field limit is number');
+  req
+    .checkQuery('pageNum')
+    .isInt()
+    .withMessage('field page_num is number');
+  req
+    .checkQuery('startTime')
     .not()
     .isEmpty()
     .withMessage('field start_time is not empty')
@@ -180,7 +214,7 @@ async function getByTime(req, res) {
     .custom(value => req.body.endTime - value >= 0)
     .withMessage('field start_time < end_time');
   req
-    .checkBody('endTime')
+    .checkQuery('endTime')
     .not()
     .isEmpty()
     .withMessage('field end_time is not empty')
@@ -195,6 +229,8 @@ async function getByTime(req, res) {
   const result = await kpiService.getLogKPIByTime({
     startTime,
     endTime,
+    limit,
+    pageNum,
   });
   return res.send({ status: 1, result });
 }

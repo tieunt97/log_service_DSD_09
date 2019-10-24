@@ -4,6 +4,7 @@ const statusCode = require('../errors/statusCode');
 const CustomError = require('../errors/CustomError');
 
 async function createLogTask({
+  id,
   project,
   taskId,
   taskName,
@@ -30,6 +31,7 @@ async function createLogTask({
     dueDate,
     endDate,
     action,
+    id,
   });
 
   if (!result) {
