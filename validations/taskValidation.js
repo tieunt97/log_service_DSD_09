@@ -2,7 +2,7 @@ const validate = require('../middlewares/validate');
 const { TYPE_TASK } = require('../constants');
 
 function createLogTaskValidation(req) {
-  const { startDate, endDate } = req.body;
+  const { startDate, endDate, assignee } = req.body;
 
   req
     .checkBody('taskId')
@@ -10,15 +10,68 @@ function createLogTaskValidation(req) {
     .isEmpty()
     .withMessage('field taskId is not empty');
   req
-    .checkBody('createId')
+    .checkBody('taskName')
     .not()
     .isEmpty()
-    .withMessage('field createId is not empty');
+    .withMessage('field taskName is not empty');
   req
-    .checkBody('assignId')
-    .not()
-    .isEmpty()
-    .withMessage('field assignId is not empty');
+    .checkBody('project')
+    .exists({
+      checkNull: true,
+    })
+    .withMessage('field project not null')
+    .custom(value => {
+      return (
+        value.id && typeof value.id === 'string' && value.id.trim().length > 0
+      );
+    })
+    .withMessage('field project.id invalid length > 0')
+    .custom(value => {
+      return (
+        value.name &&
+        typeof value.name === 'string' &&
+        value.name.trim().length > 0
+      );
+    })
+    .withMessage('field project.name invalid length > 0');
+  req
+    .checkBody('creator')
+    .exists({
+      checkNull: true,
+    })
+    .withMessage('field creator not null')
+    .custom(value => {
+      return (
+        value.id && typeof value.id === 'string' && value.id.trim().length > 0
+      );
+    })
+    .withMessage('field creator.id invalid length > 0')
+    .custom(value => {
+      return (
+        value.name &&
+        typeof value.name === 'string' &&
+        value.name.trim().length > 0
+      );
+    })
+    .withMessage('field creator.name invalid length > 0');
+  if (assignee) {
+    req
+      .checkBody('assignee')
+      .custom(value => {
+        return (
+          value.id && typeof value.id === 'string' && value.id.trim().length > 0
+        );
+      })
+      .withMessage('field assignee.id invalid length > 0')
+      .custom(value => {
+        return (
+          value.name &&
+          typeof value.name === 'string' &&
+          value.name.trim().length > 0
+        );
+      })
+      .withMessage('field assignee.name invalid length > 0');
+  }
   req
     .checkBody('type')
     .not()
@@ -56,22 +109,37 @@ function createLogTaskValidation(req) {
 }
 
 function updateLogTaskValidation(req) {
-  const { type, startDate, dueDate, endDate } = req.body;
+  const { taskName, assignee, type, startDate, dueDate, endDate } = req.body;
   req
     .checkBody('taskId')
     .not()
     .isEmpty()
     .withMessage('field taskId is not empty');
-  req
-    .checkBody('createId')
-    .not()
-    .isEmpty()
-    .withMessage('field createId is not empty');
-  req
-    .checkBody('assignId')
-    .not()
-    .isEmpty()
-    .withMessage('field assignId is not empty');
+  if (taskName != null) {
+    req
+      .checkBody('taskName')
+      .not()
+      .isEmpty()
+      .withMessage('field taskName is not empty');
+  }
+  if (assignee) {
+    req
+      .checkBody('assignee')
+      .custom(value => {
+        return (
+          value.id && typeof value.id === 'string' && value.id.trim().length > 0
+        );
+      })
+      .withMessage('field assignee.id invalid length > 0')
+      .custom(value => {
+        return (
+          value.name &&
+          typeof value.name === 'string' &&
+          value.name.trim().length > 0
+        );
+      })
+      .withMessage('field assignee.name invalid length > 0');
+  }
   if (type) {
     req
       .checkBody('type')
