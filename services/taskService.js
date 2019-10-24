@@ -11,6 +11,10 @@ async function createLogTask({
   dueDate,
   endDate,
 }) {
+  if (await checkTaskExist({ taskId })) {
+    throw new CustomError(statusCode.BAD_REQUEST, 'log task exists');
+  }
+
   const result = await taskModel.create({
     taskId,
     createId,
@@ -29,6 +33,75 @@ async function createLogTask({
   }
 }
 
+async function updateLogTask({
+  taskId,
+  createId,
+  assignId,
+  type,
+  startDate,
+  dueDate,
+  endDate,
+}) {
+  if (!(await checkTaskExist({ taskId }))) {
+    throw new CustomError(statusCode.BAD_REQUEST, 'taskId not exists');
+  }
+
+  const updateObj = {};
+
+  if (createId) {
+    updateObj.createId = createId;
+  }
+  if (assignId) {
+    updateObj.assignId = assignId;
+  }
+  if (type) {
+    updateObj.type = type;
+  }
+  if (startDate) {
+    updateObj.startDate = startDate;
+  }
+  if (dueDate) {
+    updateObj.dueDate = dueDate;
+  }
+  if (endDate) {
+    updateObj.endDate = endDate;
+  }
+
+  if (!startDate) {
+    const rsStartDate = await taskModel.findOne(
+      { taskId },
+      { startDate: 1, _id: 0 },
+    );
+
+    if (dueDate && new Date(rsStartDate.startDate) > new Date(dueDate)) {
+      throw new CustomError(
+        statusCode.BAD_REQUEST,
+        `field dueDate < startDate: ${new Date(
+          rsStartDate.startDate,
+        ).toISOString()}`,
+      );
+    }
+
+    if (endDate && new Date(rsStartDate.startDate) > new Date(endDate)) {
+      throw new CustomError(
+        statusCode.BAD_REQUEST,
+        `field endDate < startDate: ${new Date(
+          rsStartDate.startDate,
+        ).toISOString()}`,
+      );
+    }
+  }
+
+  const result = await taskModel.updateOne({ taskId }, { $set: updateObj });
+
+  if (!result) {
+    throw new CustomError(
+      statusCode.INTERNAL_SERVER_ERROR,
+      'Update Log Task Error',
+    );
+  }
+}
+
 async function checkTaskExist({ taskId }) {
   const result = await taskModel.findOne({ taskId });
   return result != null;
@@ -36,5 +109,5 @@ async function checkTaskExist({ taskId }) {
 
 module.exports = {
   createLogTask,
-  checkTaskExist,
+  updateLogTask,
 };
