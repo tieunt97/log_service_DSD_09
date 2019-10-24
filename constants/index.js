@@ -4,6 +4,20 @@ const REPORT_STATUS = {
   SUBMITTED: 'SUBMITTED',
   DONE: 'DONE',
 };
+
+const TYPE_TASK = {
+  NEW: 'NEW',
+  ENHANCE: 'ENHANCE',
+};
+
+const USER_TASK_QUERY = {
+  ALL: 'ALL',
+  CREATOR: 'CREATOR',
+  ASSIGNEE: 'ASSIGNEE',
+};
+
 module.exports = {
   REPORT_STATUS,
+  TYPE_TASK,
+  USER_TASK_QUERY,
 };
