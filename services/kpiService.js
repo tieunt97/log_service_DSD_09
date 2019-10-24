@@ -28,7 +28,13 @@ async function createLogUser({
   }
 }
 
-async function getLogKPIByUserId({ userId, startTime, endTime }) {
+async function getLogKPIByUserId({
+  userId,
+  startTime,
+  endTime,
+  limit = 10,
+  pageNum = 1,
+}) {
   const query = {
     userId,
     startDate: {
@@ -36,11 +42,57 @@ async function getLogKPIByUserId({ userId, startTime, endTime }) {
       $gte: new Date(endTime),
     },
   };
-  const result = await kpiModel.find(query);
-  return result;
+
+  const totalCount = await kpiModel.countDocuments(query);
+  if (totalCount <= 0)
+    return {
+      pager: {
+        offset: 0,
+        limit: 0,
+        currentPageNum: 0,
+        totalCount: 0,
+        hasPrev: false,
+        hasNext: false,
+        prevPageNum: undefined,
+        nextPageNum: undefined,
+        lastPageNum: 0,
+      },
+      data: [],
+    };
+
+  const totalPage = Math.ceil(totalCount / limit);
+  const currentPageNum = totalPage >= pageNum ? pageNum : 1; // <= totalPage ? pageNum : totalPage;
+  const hasPrev = currentPageNum > 1;
+  const hasNext = currentPageNum < totalPage;
+  const offset = currentPageNum > 0 ? (currentPageNum - 1) * limit : 0;
+
+  const result = await kpiModel
+    .find(query)
+    .limit(limit)
+    .skip(offset);
+  return {
+    pager: {
+      offset,
+      limit,
+      currentPageNum,
+      totalCount,
+      hasPrev,
+      hasNext,
+      prevPageNum: hasPrev ? currentPageNum - 1 : undefined,
+      nextPageNum: hasNext ? currentPageNum + 1 : undefined,
+      lastPageNum: totalPage,
+    },
+    data: result,
+  };
 }
 
-async function getLogKPIByDepartment({ departmentId, startTime, endTime }) {
+async function getLogKPIByDepartment({
+  departmentId,
+  startTime,
+  endTime,
+  limit = 10,
+  pageNum = 1,
+}) {
   const query = {
     departmentId,
     startDate: {
@@ -48,19 +100,103 @@ async function getLogKPIByDepartment({ departmentId, startTime, endTime }) {
       $gte: new Date(endTime),
     },
   };
-  const result = await kpiModel.find(query);
-  return result;
+
+  const totalCount = await kpiModel.countDocuments(query);
+  if (totalCount <= 0)
+    return {
+      pager: {
+        offset: 0,
+        limit: 0,
+        currentPageNum: 0,
+        totalCount: 0,
+        hasPrev: false,
+        hasNext: false,
+        prevPageNum: undefined,
+        nextPageNum: undefined,
+        lastPageNum: 0,
+      },
+      data: [],
+    };
+
+  const totalPage = Math.ceil(totalCount / limit);
+  const currentPageNum = totalPage >= pageNum ? pageNum : 1; // <= totalPage ? pageNum : totalPage;
+  const hasPrev = currentPageNum > 1;
+  const hasNext = currentPageNum < totalPage;
+  const offset = currentPageNum > 0 ? (currentPageNum - 1) * limit : 0;
+
+  const result = await kpiModel
+    .find(query)
+    .limit(limit)
+    .skip(offset);
+  return {
+    pager: {
+      offset,
+      limit,
+      currentPageNum,
+      totalCount,
+      hasPrev,
+      hasNext,
+      prevPageNum: hasPrev ? currentPageNum - 1 : undefined,
+      nextPageNum: hasNext ? currentPageNum + 1 : undefined,
+      lastPageNum: totalPage,
+    },
+    data: result,
+  };
 }
 
-async function getLogKPIByTime({ startTime, endTime }) {
+async function getLogKPIByTime({
+  startTime,
+  endTime,
+  limit = 10,
+  pageNum = 1,
+}) {
   const query = {
     startDate: {
       $lt: new Date(startTime),
       $gte: new Date(endTime),
     },
   };
-  const result = await kpiModel.find(query);
-  return result;
+  const totalCount = await kpiModel.countDocuments(query);
+  if (totalCount <= 0)
+    return {
+      pager: {
+        offset: 0,
+        limit: 0,
+        currentPageNum: 0,
+        totalCount: 0,
+        hasPrev: false,
+        hasNext: false,
+        prevPageNum: undefined,
+        nextPageNum: undefined,
+        lastPageNum: 0,
+      },
+      data: [],
+    };
+
+  const totalPage = Math.ceil(totalCount / limit);
+  const currentPageNum = totalPage >= pageNum ? pageNum : 1; // <= totalPage ? pageNum : totalPage;
+  const hasPrev = currentPageNum > 1;
+  const hasNext = currentPageNum < totalPage;
+  const offset = currentPageNum > 0 ? (currentPageNum - 1) * limit : 0;
+
+  const result = await kpiModel
+    .find(query)
+    .limit(limit)
+    .skip(offset);
+  return {
+    pager: {
+      offset,
+      limit,
+      currentPageNum,
+      totalCount,
+      hasPrev,
+      hasNext,
+      prevPageNum: hasPrev ? currentPageNum - 1 : undefined,
+      nextPageNum: hasNext ? currentPageNum + 1 : undefined,
+      lastPageNum: totalPage,
+    },
+    data: result,
+  };
 }
 
 module.exports = {
