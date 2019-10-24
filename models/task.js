@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const {
   TYPE_TASK: { NEW, ENHANCE },
+  LOG_ACTIONS,
 } = require('../constants');
 
 const taskSchema = new mongoose.Schema(
@@ -37,6 +38,13 @@ const taskSchema = new mongoose.Schema(
     assignee: {
       id: String,
       name: String,
+    },
+    action: {
+      userId: String,
+      status: {
+        type: String,
+        enum: Object.values(LOG_ACTIONS),
+      },
     },
   },
   {

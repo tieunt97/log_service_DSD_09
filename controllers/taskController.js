@@ -12,6 +12,7 @@ async function createLogTask(req, res) {
     startDate,
     dueDate,
     endDate,
+    action,
   } = req.body;
 
   taskValidate.createLogTaskValidation(req);
@@ -26,44 +27,45 @@ async function createLogTask(req, res) {
     startDate,
     dueDate,
     endDate,
+    action,
   });
 
   return res.send({ status: 1, message: 'create log task success' });
 }
 
-async function updateLogTask(req, res) {
-  const {
-    taskId,
-    taskName,
-    assignee,
-    type,
-    startDate,
-    dueDate,
-    endDate,
-  } = req.body;
+// async function updateLogTask(req, res) {
+//   const {
+//     taskId,
+//     taskName,
+//     assignee,
+//     type,
+//     startDate,
+//     dueDate,
+//     endDate,
+//   } = req.body;
 
-  taskValidate.updateLogTaskValidation(req);
+//   taskValidate.updateLogTaskValidation(req);
 
-  await taskService.updateLogTask({
-    taskId,
-    taskName,
-    assignee,
-    type,
-    startDate,
-    dueDate,
-    endDate,
-  });
+//   await taskService.updateLogTask({
+//     taskId,
+//     taskName,
+//     assignee,
+//     type,
+//     startDate,
+//     dueDate,
+//     endDate,
+//   });
 
-  return res.send({ status: 1, message: 'update log task success' });
-}
+//   return res.send({ status: 1, message: 'update log task success' });
+// }
 
-async function deleteLogTask(req, res) {
-  const { taskId } = req.params;
+// async function deleteLogTask(req, res) {
+//   const { taskId } = req.params;
 
-  await taskService.deleteLogTask(taskId);
+//   await taskService.deleteLogTask(taskId);
 
-  res.send({ status: 1, message: 'delete log task success' });
-}
+//   res.send({ status: 1, message: 'delete log task success' });
+// }
 
 async function getLogTaskById(req, res) {
   const { taskId } = req.params;
@@ -113,8 +115,8 @@ async function getLogTaskByUser(req, res) {
 
 module.exports = {
   createLogTask,
-  updateLogTask,
-  deleteLogTask,
+  // updateLogTask,
+  // deleteLogTask,
   getLogTaskById,
   getLogTaskByProject,
   getLogTaskByUser,

@@ -16,8 +16,15 @@ const USER_TASK_QUERY = {
   ASSIGNEE: 'ASSIGNEE',
 };
 
+const LOG_ACTIONS = {
+  CREATE: 'CREATE',
+  UPDATE: 'UPDATE',
+  REMOVE: 'REMOVE',
+};
+
 module.exports = {
   REPORT_STATUS,
   TYPE_TASK,
   USER_TASK_QUERY,
+  LOG_ACTIONS,
 };

@@ -13,8 +13,9 @@ async function createLogTask({
   startDate,
   dueDate,
   endDate,
+  action,
 }) {
-  if (await checkTaskExist({ taskId })) {
+  if (await checkTaskExist({ taskId, status: action.status })) {
     throw new CustomError(statusCode.BAD_REQUEST, 'log task exists');
   }
 
@@ -28,6 +29,7 @@ async function createLogTask({
     startDate,
     dueDate,
     endDate,
+    action,
   });
 
   if (!result) {
@@ -38,89 +40,89 @@ async function createLogTask({
   }
 }
 
-async function updateLogTask({
-  taskId,
-  taskName,
-  assignee,
-  type,
-  startDate,
-  dueDate,
-  endDate,
-}) {
-  if (!(await checkTaskExist({ taskId }))) {
-    throw new CustomError(statusCode.BAD_REQUEST, 'taskId not exists');
-  }
+// async function updateLogTask({
+//   taskId,
+//   taskName,
+//   assignee,
+//   type,
+//   startDate,
+//   dueDate,
+//   endDate,
+// }) {
+//   if (!(await checkTaskExist({ taskId }))) {
+//     throw new CustomError(statusCode.BAD_REQUEST, 'taskId not exists');
+//   }
 
-  const updateObj = {};
+//   const updateObj = {};
 
-  if (taskName) {
-    updateObj.taskName = taskName;
-  }
-  if (assignee) {
-    updateObj.assignee = assignee;
-  }
-  if (type) {
-    updateObj.type = type;
-  }
-  if (startDate) {
-    updateObj.startDate = startDate;
-  }
-  if (dueDate) {
-    updateObj.dueDate = dueDate;
-  }
-  if (endDate) {
-    updateObj.endDate = endDate;
-  }
+//   if (taskName) {
+//     updateObj.taskName = taskName;
+//   }
+//   if (assignee) {
+//     updateObj.assignee = assignee;
+//   }
+//   if (type) {
+//     updateObj.type = type;
+//   }
+//   if (startDate) {
+//     updateObj.startDate = startDate;
+//   }
+//   if (dueDate) {
+//     updateObj.dueDate = dueDate;
+//   }
+//   if (endDate) {
+//     updateObj.endDate = endDate;
+//   }
 
-  if (!startDate) {
-    const rsStartDate = await taskModel.findOne(
-      { taskId },
-      { startDate: 1, _id: 0 },
-    );
+//   if (!startDate) {
+//     const rsStartDate = await taskModel.findOne(
+//       { taskId },
+//       { startDate: 1, _id: 0 },
+//     );
 
-    if (dueDate && new Date(rsStartDate.startDate) > new Date(dueDate)) {
-      throw new CustomError(
-        statusCode.BAD_REQUEST,
-        `field dueDate < startDate: ${new Date(
-          rsStartDate.startDate,
-        ).toISOString()}`,
-      );
-    }
+//     if (dueDate && new Date(rsStartDate.startDate) > new Date(dueDate)) {
+//       throw new CustomError(
+//         statusCode.BAD_REQUEST,
+//         `field dueDate < startDate: ${new Date(
+//           rsStartDate.startDate,
+//         ).toISOString()}`,
+//       );
+//     }
 
-    if (endDate && new Date(rsStartDate.startDate) > new Date(endDate)) {
-      throw new CustomError(
-        statusCode.BAD_REQUEST,
-        `field endDate < startDate: ${new Date(
-          rsStartDate.startDate,
-        ).toISOString()}`,
-      );
-    }
-  }
+//     if (endDate && new Date(rsStartDate.startDate) > new Date(endDate)) {
+//       throw new CustomError(
+//         statusCode.BAD_REQUEST,
+//         `field endDate < startDate: ${new Date(
+//           rsStartDate.startDate,
+//         ).toISOString()}`,
+//       );
+//     }
+//   }
 
-  const result = await taskModel.updateOne({ taskId }, { $set: updateObj });
+//   const result = await taskModel.updateOne({ taskId }, { $set: updateObj });
 
-  if (!result) {
-    throw new CustomError(
-      statusCode.INTERNAL_SERVER_ERROR,
-      'Update Log Task Error',
-    );
-  }
-}
+//   if (!result) {
+//     throw new CustomError(
+//       statusCode.INTERNAL_SERVER_ERROR,
+//       'Update Log Task Error',
+//     );
+//   }
+// }
 
-async function deleteLogTask(taskId) {
-  if (!(await checkTaskExist({ taskId }))) {
-    throw new CustomError(statusCode.BAD_REQUEST, 'task not exist');
-  }
+// async function deleteLogTask(taskId) {
+//   if (!(await checkTaskExist({ taskId }))) {
+//     throw new CustomError(statusCode.BAD_REQUEST, 'task not exist');
+//   }
 
-  const result = await taskModel.remove({ taskId });
+//   const result = await taskModel.remove({ taskId });
 
-  if (!result) {
-    throw new CustomError(
-      statusCode.INTERNAL_SERVER_ERROR,
-      'Delete Log Task Error',
-    );
-  }
-}
+//   if (!result) {
+//     throw new CustomError(
+//       statusCode.INTERNAL_SERVER_ERROR,
+//       'Delete Log Task Error',
+//     );
+//   }
+// }
 
 async function getLogTaskById(taskId) {
   const result = await taskModel.findOne({ taskId });
@@ -205,15 +207,15 @@ async function getLogTaskByUser({
   return results;
 }
 
-async function checkTaskExist({ taskId }) {
-  const result = await taskModel.findOne({ taskId });
+async function checkTaskExist({ taskId, status }) {
+  const result = await taskModel.findOne({ taskId, 'action.status': status });
   return result != null;
 }
 
 module.exports = {
   createLogTask,
-  updateLogTask,
-  deleteLogTask,
+  // updateLogTask,
+  // deleteLogTask,
   getLogTaskById,
   getLogTaskByProject,
   getLogTaskByUser,

@@ -1,5 +1,5 @@
 const validate = require('../middlewares/validate');
-const { TYPE_TASK, USER_TASK_QUERY } = require('../constants');
+const { TYPE_TASK, USER_TASK_QUERY, LOG_ACTIONS } = require('../constants');
 
 function createLogTaskValidation(req) {
   const { startDate, endDate, assignee } = req.body;
@@ -95,7 +95,6 @@ function createLogTaskValidation(req) {
     .withMessage('startDate format invalid yyyy-mm-dd')
     .custom(value => new Date(value) >= new Date(startDate))
     .withMessage('field dueDate < startDate');
-
   if (endDate) {
     req
       .checkBody('endDate')
@@ -104,81 +103,105 @@ function createLogTaskValidation(req) {
       .custom(value => new Date(value) >= new Date(startDate))
       .withMessage('field endDate < startDate');
   }
-
-  validate.validateParams(req);
-}
-
-function updateLogTaskValidation(req) {
-  const { taskName, assignee, type, startDate, dueDate, endDate } = req.body;
   req
-    .checkBody('taskId')
-    .not()
-    .isEmpty()
-    .withMessage('field taskId is not empty');
-  if (taskName != null) {
-    req
-      .checkBody('taskName')
-      .not()
-      .isEmpty()
-      .withMessage('field taskName is not empty');
-  }
-  if (assignee) {
-    req
-      .checkBody('assignee')
-      .custom(value => {
-        return (
-          value.id && typeof value.id === 'string' && value.id.trim().length > 0
-        );
-      })
-      .withMessage('field assignee.id invalid length > 0')
-      .custom(value => {
-        return (
-          value.name &&
-          typeof value.name === 'string' &&
-          value.name.trim().length > 0
-        );
-      })
-      .withMessage('field assignee.name invalid length > 0');
-  }
-  if (type) {
-    req
-      .checkBody('type')
-      .custom(value => TYPE_TASK[value])
-      .withMessage('field type is invalid');
-  }
-  if (startDate) {
-    req
-      .checkBody('startDate')
-      .custom(value => validate.isDateFormat(value))
-      .withMessage('startDate format invalid yyyy-mm-dd');
-  }
-  if (dueDate) {
-    req
-      .checkBody('dueDate')
-      .custom(value => validate.isDateFormat(value))
-      .withMessage('dueDate format invalid yyyy-mm-dd');
-  }
-  if (startDate && dueDate) {
-    req
-      .checkBody('dueDate')
-      .custom(value => new Date(value) >= new Date(startDate))
-      .withMessage('field dueDate < startDate');
-  }
-  if (endDate) {
-    req
-      .checkBody('endDate')
-      .custom(value => validate.isDateFormat(value))
-      .withMessage('endDate format invalid yyyy-mm-dd');
-  }
-  if (startDate && endDate) {
-    req
-      .checkBody('endDate')
-      .custom(value => new Date(value) >= new Date(startDate))
-      .withMessage('field endDate < startDate');
-  }
+    .checkBody('action')
+    .exists({
+      checkNull: true,
+    })
+    .withMessage('field action not null')
+    .custom(value => {
+      return (
+        value.userId &&
+        typeof value.userId === 'string' &&
+        value.userId.trim().length > 0
+      );
+    })
+    .withMessage('field action.userId invalid length > 0')
+    .custom(value => {
+      return (
+        value.status &&
+        typeof value.status === 'string' &&
+        LOG_ACTIONS[value.status]
+      );
+    })
+    .withMessage(
+      `field action.status invalid: ${Object.values(LOG_ACTIONS).toString()} `,
+    );
 
   validate.validateParams(req);
 }
+
+// function updateLogTaskValidation(req) {
+//   const { taskName, assignee, type, startDate, dueDate, endDate } = req.body;
+//   req
+//     .checkBody('taskId')
+//     .not()
+//     .isEmpty()
+//     .withMessage('field taskId is not empty');
+//   if (taskName != null) {
+//     req
+//       .checkBody('taskName')
+//       .not()
+//       .isEmpty()
+//       .withMessage('field taskName is not empty');
+//   }
+//   if (assignee) {
+//     req
+//       .checkBody('assignee')
+//       .custom(value => {
+//         return (
+//           value.id && typeof value.id === 'string' && value.id.trim().length > 0
+//         );
+//       })
+//       .withMessage('field assignee.id invalid length > 0')
+//       .custom(value => {
+//         return (
+//           value.name &&
+//           typeof value.name === 'string' &&
+//           value.name.trim().length > 0
+//         );
+//       })
+//       .withMessage('field assignee.name invalid length > 0');
+//   }
+//   if (type) {
+//     req
+//       .checkBody('type')
+//       .custom(value => TYPE_TASK[value])
+//       .withMessage('field type is invalid');
+//   }
+//   if (startDate) {
+//     req
+//       .checkBody('startDate')
+//       .custom(value => validate.isDateFormat(value))
+//       .withMessage('startDate format invalid yyyy-mm-dd');
+//   }
+//   if (dueDate) {
+//     req
+//       .checkBody('dueDate')
+//       .custom(value => validate.isDateFormat(value))
+//       .withMessage('dueDate format invalid yyyy-mm-dd');
+//   }
+//   if (startDate && dueDate) {
+//     req
+//       .checkBody('dueDate')
+//       .custom(value => new Date(value) >= new Date(startDate))
+//       .withMessage('field dueDate < startDate');
+//   }
+//   if (endDate) {
+//     req
+//       .checkBody('endDate')
+//       .custom(value => validate.isDateFormat(value))
+//       .withMessage('endDate format invalid yyyy-mm-dd');
+//   }
+//   if (startDate && endDate) {
+//     req
+//       .checkBody('endDate')
+//       .custom(value => new Date(value) >= new Date(startDate))
+//       .withMessage('field endDate < startDate');
+//   }
+
+//   validate.validateParams(req);
+// }
 
 function getLogTaskByProjectValidation(req) {
   const { startDate, endDate, limit, page } = req.query;
@@ -267,7 +290,7 @@ function getLogTaskByUserValidation(req) {
 
 module.exports = {
   createLogTaskValidation,
-  updateLogTaskValidation,
+  // updateLogTaskValidation,
   getLogTaskByProjectValidation,
   getLogTaskByUserValidation,
 };
